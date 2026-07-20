@@ -1,0 +1,36 @@
+/* ══════════════════════════════════════════
+   TUMAQUETA — index.css (global reset)
+   ══════════════════════════════════════════ */
+
+/* Figma fonts: Lexend Deca · Syne Mono · Anonymous Pro */
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&family=Syne+Mono&family=Anonymous+Pro&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Lexend Deca', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+button, input {
+  font-family: inherit;
+  cursor: pointer;
+}

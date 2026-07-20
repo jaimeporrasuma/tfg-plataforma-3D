@@ -1,0 +1,227 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: var(--font-heading);
+  font-size: 3.5vw;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.logoLeft {
+  margin: 0;
+  font-size: 3.5vw;
+}
+
+.topBarLoggedIn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.topBarLeft {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.topBarCenter {
+  width: 100%;
+  max-width: 785px;
+  display: flex;
+  justify-content: center;
+}
+
+.topBarRight {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.navPill {
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border-radius: 112px;
+  padding: 6px;
+}
+
+.navItem {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--orange);
+  padding: 10px 24px;
+  border-radius: 112px;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.navItemActive {
+  background: var(--orange);
+  color: var(--white);
+}
+
+.userDropdownContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.userPill {
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border-radius: 112px;
+  padding: 10px 20px;
+  transition: transform 0.15s;
+  cursor: pointer;
+}
+
+.userPill:hover {
+  transform: translateY(-2px);
+}
+
+.userMenu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.userMenuItem {
+  background: none;
+  border: none;
+  padding: 16px 20px;
+  text-align: left;
+  font-family: var(--font-heading);
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.userMenuItem:hover {
+  background: rgba(220, 103, 0, 0.08);
+  color: var(--orange);
+}
+
+.userMenuItemLogout {
+  border-top: 1px solid rgba(0,0,0,0.05);
+  color: #c0392b;
+}
+
+.userMenuItemLogout:hover {
+  background: #fdecea;
+  color: #a93226;
+}
+
+.userName {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--orange);
+  margin-left: 8px;
+}
+
+.userIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.topBarAuthButtons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.btnRegisterTop {
+  background: var(--white);
+  color: var(--orange);
+  border: 2px solid var(--white);
+  border-radius: 50px;
+  padding: 8px 22px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnRegisterTop:hover {
+  background: #f0f0f0;
+  border-color: #f0f0f0;
+  color: var(--orange);
+  transform: translateY(-1px);
+}
+
+.btnLoginTop {
+  background: var(--orange);
+  color: var(--white);
+  border: 2px solid var(--orange);
+  border-radius: 50px;
+  padding: 8px 22px;
+  box-shadow: 0 4px 16px rgba(255, 141, 40, 0.3);
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnLoginTop:hover {
+  background: #e87010;
+  border-color: #e87010;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1024px) {
+  .topBar, .topBarLoggedIn {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .topBarLeft, .topBarRight {
+    flex: none;
+    justify-content: center;
+  }
+
+  .topBarCenter {
+    order: 3;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .logo, .logoLeft { 
+    font-size: 40px; 
+  }
+  
+  .navItem {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+
+  .userName {
+    display: none;
+  }
+}
