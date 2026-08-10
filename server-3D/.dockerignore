@@ -1,0 +1,20 @@
+# Dependencias locales (Docker debe instalar las suyas propias)
+node_modules/
+npm-debug.log
+
+# Variables de entorno y secretos (se inyectan en tiempo de ejecucion, no en la imagen)
+.env
+
+# Archivos de Git
+.git/
+.gitignore
+
+# Archivos de configuracion de Docker y scripts
+Dockerfile
+docker-compose*.yml
+*.bat
+*.sh
+
+# Archivos del SO
+.DS_Store
+Thumbs.db

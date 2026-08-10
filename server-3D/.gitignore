@@ -1,0 +1,10 @@
+# Dependencias
+node_modules/
+npm-debug.log
+
+# Variables de entorno reales (NUNCA SUBIR A GITHUB)
+.env
+
+# Archivos del SO
+.DS_Store
+Thumbs.db
