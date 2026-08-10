@@ -1,0 +1,15 @@
+services:
+  gpu-worker:
+    build: .
+    container_name: tumaqueta_3d_server
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    environment:
+      # Le decimos al Node.js interno donde esta la carpeta virtual
+      - COMFYUI_DIR=/app/comfyui
+    volumes:
+      # Mapeamos la ruta real de Windows (leida del .env) a la virtual de Linux
+      - ${COMFYUI_WINDOWS_DIR}:/app/comfyui
+    restart: unless-stopped
