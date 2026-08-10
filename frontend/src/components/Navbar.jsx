@@ -5,7 +5,7 @@ import accountIcon from '../assets/account_circle.svg';
 import styles from './Navbar.module.css';
 
 export default function Navbar({ authView, setAuthView }) {
-  const { user, dbUsername, logout } = useAuth();
+  const { user, dbUsername, isAdmin, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
 
@@ -37,6 +37,11 @@ export default function Navbar({ authView, setAuthView }) {
           {user && (
             <NavLink to="/creaciones" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}>
               Tus Creaciones
+            </NavLink>
+          )}
+          {user && isAdmin && (
+            <NavLink to="/admin" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}>
+              Administración
             </NavLink>
           )}
         </nav>

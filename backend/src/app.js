@@ -24,6 +24,7 @@ const server = app.listen(PORT, () => {
 });
 
 server.on('error', (err) => {
+    console.error("!!!! REAL ERROR RECEIVED !!!!", err);
     if (err.code === 'EACCES' || err.code === 'EADDRINUSE') {
         console.error(`\nERROR: El puerto ${PORT} está bloqueado por Windows o en uso.`);
         process.exit(1);

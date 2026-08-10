@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 import { GenerarImagenSkill } from '../skills/GenerarImagenSkill.js';
 import { EnviarTrellisSkill } from '../skills/EnviarTrellisSkill.js';
+import { ValidarImagenSkill } from '../skills/ValidarImagenSkill.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -54,7 +55,8 @@ const createChatWithFallback = (config) => {
 
 const availableSkills = {
     [GenerarImagenSkill.declaration.name]: GenerarImagenSkill,
-    [EnviarTrellisSkill.declaration.name]: EnviarTrellisSkill
+    [EnviarTrellisSkill.declaration.name]: EnviarTrellisSkill,
+    [ValidarImagenSkill.declaration.name]: ValidarImagenSkill
 };
 
 const agentTools = [{
@@ -130,9 +132,9 @@ export const iniciarAgente = async (userIdea, referenceImage = null) => {
 
                     //El agente no tiene el base64 real (lo sustituimos por un token simbólico).
                     //Inyectamos la imagen capturada en las skills que la necesitan.
-                    if (call.name === "enviar_a_trellis" && capturedImage) {
+                    if ((call.name === "enviar_a_trellis" || call.name === "validar_imagen") && capturedImage) {
                         argsCloned.imagen_base64 = capturedImage;
-                        console.log("AGENTE Inyectando imagen en enviar_a_trellis");
+                        console.log(`AGENTE Inyectando imagen en ${call.name}`);
                     }
 
                     //Si hay imagen de referencia del usuario, inyectarla en la skill de imagen

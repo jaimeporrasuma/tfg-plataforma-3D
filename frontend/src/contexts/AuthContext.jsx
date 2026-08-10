@@ -12,6 +12,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [dbUsername, setDbUsername] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
@@ -21,7 +22,9 @@ export function AuthProvider({ children }) {
         try {
           const userDoc = await getDoc(doc(db, 'usuarios', u.uid));
           if (userDoc.exists()) {
-            setDbUsername(userDoc.data().username);
+            const data = userDoc.data();
+            setDbUsername(data.username);
+            setIsAdmin(data.isAdmin || false);
           }
         } catch (err) {
           console.error("Error al obtener username:", err);
@@ -38,11 +41,13 @@ export function AuthProvider({ children }) {
     await auth.signOut();
     setUser(null);
     setDbUsername(null);
+    setIsAdmin(false);
   };
 
   const value = {
     user,
     dbUsername,
+    isAdmin,
     setDbUsername,
     logout,
     loadingAuth

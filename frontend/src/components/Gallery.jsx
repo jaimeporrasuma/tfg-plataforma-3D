@@ -77,13 +77,18 @@ export default function Gallery({ onBack }) {
             <div key={c.id} className="creation-card card">
               <div className="creation-info">
                 <h3 className="creation-title">{c.prompt}</h3>
-                <p className="creation-date">
-                  {new Date(c.createdAt).toLocaleDateString('es-ES', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </p>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                  <p className="creation-date" style={{ margin: 0 }}>
+                    {new Date(c.createdAt).toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </p>
+                  <p className="creation-date" style={{color: 'var(--orange)', margin: 0, fontWeight: 'bold'}}>
+                    Autor: {c.username || 'Anónimo'}
+                  </p>
+                </div>
               </div>
               {c.imageUrl && (
                 <div className="creation-image-wrapper">

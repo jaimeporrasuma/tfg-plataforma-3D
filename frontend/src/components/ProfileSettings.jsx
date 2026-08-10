@@ -6,13 +6,15 @@ import {
   EmailAuthProvider,
   deleteUser
 } from 'firebase/auth'
-import { doc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { doc, updateDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore'
 import { auth, db } from '../config/firebase'
 import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 export default function ProfileSettings({ onBack }) {
   const { user, dbUsername, setDbUsername, logout } = useAuth();
-  
+  const navigate = useNavigate();
+
   // ── Nombre de usuario ──
   const [newUsername, setNewUsername] = useState(dbUsername || user.displayName || '')
   const [usernameMsg, setUsernameMsg] = useState(null)
@@ -26,10 +28,11 @@ export default function ProfileSettings({ onBack }) {
   const [passwordSaving, setPasswordSaving] = useState(false)
 
   // ── Borrar cuenta ──
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [deletePassword, setDeletePassword] = useState('')
   const [deleteMsg, setDeleteMsg] = useState(null)
-  const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [deleteCreations, setDeleteCreations] = useState(true)
 
   // ════════════════════════════════════════════
   //  CAMBIAR NOMBRE DE USUARIO
@@ -122,6 +125,14 @@ export default function ProfileSettings({ onBack }) {
       // Borrar documento de Firestore
       await deleteDoc(doc(db, 'usuarios', user.uid))
 
+      // Borrar creaciones si el usuario lo marcó
+      if (deleteCreations) {
+        const q = query(collection(db, 'creaciones'), where('uid', '==', user.uid))
+        const querySnapshot = await getDocs(q)
+        const deletePromises = querySnapshot.docs.map(document => deleteDoc(doc(db, 'creaciones', document.id)))
+        await Promise.all(deletePromises)
+      }
+
       // Borrar cuenta de Firebase Auth
       await deleteUser(user)
 
@@ -142,7 +153,7 @@ export default function ProfileSettings({ onBack }) {
     <div className="profile-settings">
       {/* ── Cabecera ── */}
       <div className="profile-header">
-        <button className="profile-back" onClick={onBack}>
+        <button className="profile-back" onClick={onBack || (() => navigate(-1))}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M5 12l7 7M5 12l7-7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -210,7 +221,7 @@ export default function ProfileSettings({ onBack }) {
       <div className="profile-section profile-section--danger">
         <h3 className="profile-section-title profile-section-title--danger">Eliminar cuenta</h3>
         <p className="profile-danger-warning">
-          Esta acción es irreversible. Se borrarán todos tus datos y creaciones permanentemente.
+          Esta acción es irreversible. Se borrará tu cuenta de forma permanente.
         </p>
 
         {!deleteConfirm ? (
@@ -230,6 +241,16 @@ export default function ProfileSettings({ onBack }) {
               value={deletePassword}
               onChange={(e) => setDeletePassword(e.target.value)}
             />
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#555', fontSize: '14px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={deleteCreations}
+                onChange={(e) => setDeleteCreations(e.target.checked)}
+                style={{ cursor: 'pointer' }}
+              />
+              Eliminar también todas mis creaciones.
+            </label>
             <div className="profile-field-row">
               <button
                 type="button"

@@ -8,6 +8,7 @@ import Home from './components/Home'
 import ProfileSettings from './components/ProfileSettings'
 import MyCreations from './components/MyCreations'
 import Gallery from './components/Gallery'
+import AdminGallery from './components/AdminGallery'
 import ViewerModal from './components/ViewerModal'
 import './App.css'
 
@@ -86,6 +87,9 @@ function App() {
             <Route path="/galeria" element={<Gallery />} />
             <Route path="/creaciones" element={
               user ? <MyCreations /> : <div style={{ textAlign: 'center', marginTop: '4rem' }}>Debes iniciar sesión</div>
+            } />
+            <Route path="/admin" element={
+              user ? <AdminGallery /> : <div style={{ textAlign: 'center', marginTop: '4rem' }}>Debes iniciar sesión</div>
             } />
             <Route path="/perfil" element={
               user ? <ProfileSettings /> : <div style={{ textAlign: 'center', marginTop: '4rem' }}>Debes iniciar sesión</div>

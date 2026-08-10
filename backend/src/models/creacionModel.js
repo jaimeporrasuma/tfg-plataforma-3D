@@ -17,8 +17,21 @@ import path from 'path';
 */
 
 export async function guardarCreacion(data) {
+    let username = 'Anónimo';
+    if (data.uid) {
+        try {
+            const userDoc = await db.collection('usuarios').doc(data.uid).get();
+            if (userDoc.exists) {
+                username = userDoc.data().username || 'Anónimo';
+            }
+        } catch (error) {
+            console.error("Error obteniendo username del autor:", error);
+        }
+    }
+
     const creacionData = {
         uid: data.uid,
+        username: username,
         prompt: data.prompt.trim(),
         modelUrl: data.modelUrl,
         imageUrl: data.imageUrl || null,
