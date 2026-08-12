@@ -114,7 +114,7 @@ start "" "http://localhost:5173"
 echo.
 echo  -------------------------------------------------
 echo   App:     http://localhost:5173
-echo   Backend: http://localhost:4000
+echo   Backend: http://localhost:8080
 echo  -------------------------------------------------
 echo.
 echo  NO cierres esta ventana mientras uses la app.

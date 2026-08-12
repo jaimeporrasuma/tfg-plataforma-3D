@@ -9,7 +9,7 @@ const PORT = 3001;
 
 // --- CONFIGURACIÓN VITAL ---
 // Si estamos en Docker usamos las variables de entorno, si no, las locales de Windows
-const COMFYUI_DIR = process.env.COMFYUI_WINDOWS_DIR;
+const COMFYUI_DIR = process.env.COMFYUI_DIR || process.env.COMFYUI_WINDOWS_DIR;
 const COMFY_API_URL = process.env.COMFYUI_API_URL || 'http://127.0.0.1:8188';
 
 const COMFY_INPUT = path.join(COMFYUI_DIR, 'input');
@@ -68,7 +68,7 @@ app.post('/api/generar-3d', async (req, res) => {
         while (!terminado) {
             await new Promise(r => setTimeout(r, 5000)); // Espera 5s
             
-            const historialRes = await fetch(`http://127.0.0.1:8188/history/${promptId}`);
+            const historialRes = await fetch(`${COMFY_API_URL}/history/${promptId}`);
             const historialData = await historialRes.json();
             
             //Si la tarea aparece en el historial, es que ha terminado
@@ -99,7 +99,7 @@ app.post('/api/generar-3d', async (req, res) => {
         //Forzar a ComfyUI a vaciar la RAM y VRAM
         try {
             console.log(`[5/5]Ordenando a ComfyUI que libere la memoria...`);
-            await fetch('http://127.0.0.1:8188/free', {
+            await fetch(`${COMFY_API_URL}/free`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 

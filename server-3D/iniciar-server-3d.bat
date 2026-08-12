@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title TFG Server GPU - Docker
+title  Logs - Server 3D
 
 echo.
 echo  ======================================================
-echo     PUENTE API PARA COMFYUI (WORKER GPU) - MODO DOCKER
+echo     PUENTE API PARA COMFYUI - MODO DOCKER
 echo  ======================================================
 echo.
 
