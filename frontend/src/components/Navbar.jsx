@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import accountIcon from '../assets/account_circle.svg';
 import styles from './Navbar.module.css';
@@ -8,6 +8,7 @@ export default function Navbar({ authView, setAuthView }) {
   const { user, dbUsername, isAdmin, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Close auth modal if user logs in
   useEffect(() => {
@@ -67,18 +68,20 @@ export default function Navbar({ authView, setAuthView }) {
             )}
           </div>
         ) : (
-          <div className={styles.topBarAuthButtons}>
-            {authView !== 'login' && (
-              <button className={styles.btnLoginTop} onClick={() => setAuthView('login')}>
-                Iniciar sesión
-              </button>
-            )}
-            {authView !== 'register' && (
-              <button className={styles.btnRegisterTop} onClick={() => setAuthView('register')}>
-                Registrarse
-              </button>
-            )}
-          </div>
+          location.pathname !== '/galeria' && (
+            <div className={styles.topBarAuthButtons}>
+              {authView !== 'login' && (
+                <button className={styles.btnLoginTop} onClick={() => setAuthView('login')}>
+                  Iniciar sesión
+                </button>
+              )}
+              {authView !== 'register' && (
+                <button className={styles.btnRegisterTop} onClick={() => setAuthView('register')}>
+                  Registrarse
+                </button>
+              )}
+            </div>
+          )
         )}
       </div>
     </div>

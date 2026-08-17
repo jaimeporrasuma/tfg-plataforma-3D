@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDjn4uCwBnO3gVSKtprSMDaUAqFtz98oR0",
@@ -20,3 +21,6 @@ export const auth = getAuth(app);
 
 //Exportamos Firestore (para guardar los datos del usuario)
 export const db = getFirestore(app);
+
+//Exportamos Storage (para guardar/borrar archivos físicos como modelos y fotos)
+export const storage = getStorage(app);

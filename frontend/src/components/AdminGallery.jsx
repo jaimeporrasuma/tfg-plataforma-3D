@@ -3,6 +3,7 @@ import { collection, query as fbQuery, orderBy, getDocs, updateDoc, deleteDoc, d
 import { db } from '../config/firebase'
 import ViewerModal from './ViewerModal'
 import { useAuth } from '../contexts/AuthContext'
+import { deleteFileFromStorage } from '../services/storageService'
 
 export default function AdminGallery() {
   const { user, isAdmin } = useAuth()
@@ -51,7 +52,18 @@ export default function AdminGallery() {
   const handleDelete = async () => {
     if (!itemToDelete) return
     try {
+      // 1. Encontrar la creación para obtener sus URLs de archivos
+      const creationToDelete = creations.find(c => c.id === itemToDelete)
+
+      // 2. Borrar documento de Firestore
       await deleteDoc(doc(db, 'creaciones', itemToDelete))
+      
+      // 3. Si tiene archivos en Storage, borrarlos
+      if (creationToDelete) {
+        if (creationToDelete.modelUrl) await deleteFileFromStorage(creationToDelete.modelUrl)
+        if (creationToDelete.imageUrl) await deleteFileFromStorage(creationToDelete.imageUrl)
+      }
+
       setCreations(creations.filter(c => c.id !== itemToDelete))
       setItemToDelete(null)
     } catch (err) {

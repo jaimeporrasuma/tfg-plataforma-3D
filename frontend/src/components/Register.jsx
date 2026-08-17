@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import { auth, db } from '../config/firebase'
+import { checkUsernameExists } from '../services/userService'
 
 export default function Register({ onSwitchToLogin, onSuccess }) {
   const [username, setUsername] = useState('')
@@ -25,6 +26,18 @@ export default function Register({ onSwitchToLogin, onSuccess }) {
 
     setLoading(true)
     try {
+      // Comprobar si el nombre de usuario ya está en uso usando la función centralizada
+      const usernameExists = await checkUsernameExists(username)
+      
+      if (usernameExists) {
+        setError('Ese nombre de usuario ya está en uso. Por favor, elige otro.')
+        setLoading(false)
+        return
+      }
+
+      // Convertimos el username a minúsculas para guardarlo en la BBDD y permitir búsquedas futuras
+      const usernameLowerToSearch = username.trim().toLowerCase()
+
       const { user } = await createUserWithEmailAndPassword(auth, email, password)
 
       // Asignar el nombre al perfil de sesión
@@ -32,6 +45,7 @@ export default function Register({ onSwitchToLogin, onSuccess }) {
       await setDoc(doc(db, 'usuarios', user.uid), {
         uid: user.uid,
         username: username.trim(),
+        usernameLower: usernameLowerToSearch,
         email: user.email,
         createdAt: new Date().toISOString(),
       })

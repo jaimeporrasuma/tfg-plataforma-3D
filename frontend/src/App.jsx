@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import { generarMaqueta3D } from './services/apiService'
 
@@ -26,10 +26,67 @@ function App() {
 
   //Auth View (login/register/none modals in Home)
   const [authView, setAuthView] = useState('none')
+  
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const AuthRequiredMessage = () => {
+    const isDeleted = location.state?.accountDeleted;
+    return (
+      <div style={{ textAlign: 'center', marginTop: '6rem', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <h2 style={{ marginBottom: '2rem', fontWeight: 500, fontSize: '1.8rem', fontFamily: 'var(--font-heading)' }}>
+          {isDeleted ? "Cuenta eliminada correctamente" : "Debes iniciar sesión"}
+        </h2>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
+          <button 
+            style={{ 
+              background: 'var(--orange, #e65c00)', 
+              color: 'white', 
+              padding: '10px 24px', 
+              borderRadius: '112px', 
+              border: 'none', 
+              cursor: 'pointer', 
+              fontSize: '18px', 
+              fontWeight: 600, 
+              fontFamily: 'var(--font-heading)' 
+            }} 
+            onClick={() => { setAuthView('login'); navigate('/'); }}
+          >
+            Iniciar sesión
+          </button>
+          <span style={{ fontSize: '1.2rem', opacity: 0.8, fontFamily: 'var(--font-heading)' }}>o</span>
+          <button 
+            style={{ 
+              background: 'white', 
+              color: 'var(--orange, #e65c00)', 
+              padding: '10px 24px', 
+              borderRadius: '112px', 
+              border: 'none', 
+              cursor: 'pointer', 
+              fontSize: '18px', 
+              fontWeight: 600, 
+              fontFamily: 'var(--font-heading)' 
+            }} 
+            onClick={() => { setAuthView('register'); navigate('/'); }}
+          >
+            Registrarse
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0]
     if (!file) return
+
+    // Validar formato (solo permitimos JPG y PNG)
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']
+    if (!allowedTypes.includes(file.type)) {
+      alert('Por favor, selecciona una imagen en formato JPG o PNG.')
+      e.target.value = '' // Limpiar el input
+      return
+    }
 
     const reader = new FileReader()
     reader.onload = () => {
@@ -86,13 +143,13 @@ function App() {
             } />
             <Route path="/galeria" element={<Gallery />} />
             <Route path="/creaciones" element={
-              user ? <MyCreations /> : <div style={{ textAlign: 'center', marginTop: '4rem' }}>Debes iniciar sesión</div>
+              user ? <MyCreations /> : <AuthRequiredMessage />
             } />
             <Route path="/admin" element={
-              user ? <AdminGallery /> : <div style={{ textAlign: 'center', marginTop: '4rem' }}>Debes iniciar sesión</div>
+              user ? <AdminGallery /> : <AuthRequiredMessage />
             } />
             <Route path="/perfil" element={
-              user ? <ProfileSettings /> : <div style={{ textAlign: 'center', marginTop: '4rem' }}>Debes iniciar sesión</div>
+              user ? <ProfileSettings /> : <AuthRequiredMessage />
             } />
           </Routes>
         </section>

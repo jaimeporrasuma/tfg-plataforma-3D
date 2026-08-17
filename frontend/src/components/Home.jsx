@@ -49,7 +49,7 @@ export default function Home({
                   <input
                     type="file"
                     id="reference-image-input"
-                    accept="image/*"
+                    accept=".jpg,.jpeg,.png"
                     style={{ display: 'none' }}
                     onChange={handleImageSelect}
                   />

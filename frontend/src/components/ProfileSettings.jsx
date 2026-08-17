@@ -10,6 +10,8 @@ import { doc, updateDoc, deleteDoc, collection, query, where, getDocs } from 'fi
 import { auth, db } from '../config/firebase'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { checkUsernameExists } from '../services/userService'
+import { deleteFileFromStorage } from '../services/storageService'
 
 export default function ProfileSettings({ onBack }) {
   const { user, dbUsername, setDbUsername, logout } = useAuth();
@@ -49,12 +51,26 @@ export default function ProfileSettings({ onBack }) {
 
     setUsernameSaving(true)
     try {
-      // 1. Actualizar en Firebase Auth (displayName)
+      // 1. Comprobar que no exista ya en la BBDD
+      // Evitamos comprobar si el usuario intenta ponerse su nombre actual (aunque difiera en mayúsculas)
+      if (trimmed.toLowerCase() !== user.displayName?.toLowerCase()) {
+        const usernameExists = await checkUsernameExists(trimmed)
+        if (usernameExists) {
+          setUsernameMsg({ type: 'error', text: 'Ese nombre de usuario ya está en uso.' })
+          setUsernameSaving(false)
+          return
+        }
+      }
+
+      // 2. Actualizar en Firebase Auth (displayName)
       await updateProfile(user, { displayName: trimmed })
 
-      // 2. Actualizar en Firestore
+      // 3. Actualizar en Firestore (añadiendo el campo usernameLower para búsquedas)
       const userRef = doc(db, 'usuarios', user.uid)
-      await updateDoc(userRef, { username: trimmed })
+      await updateDoc(userRef, { 
+        username: trimmed,
+        usernameLower: trimmed.toLowerCase()
+      })
 
       setUsernameMsg({ type: 'success', text: '¡Nombre actualizado correctamente!' })
       setDbUsername(trimmed)
@@ -129,7 +145,18 @@ export default function ProfileSettings({ onBack }) {
       if (deleteCreations) {
         const q = query(collection(db, 'creaciones'), where('uid', '==', user.uid))
         const querySnapshot = await getDocs(q)
-        const deletePromises = querySnapshot.docs.map(document => deleteDoc(doc(db, 'creaciones', document.id)))
+        
+        const deletePromises = querySnapshot.docs.map(async (document) => {
+          const data = document.data()
+          
+          // Borrar archivos asociados en Storage
+          if (data.modelUrl) await deleteFileFromStorage(data.modelUrl)
+          if (data.imageUrl) await deleteFileFromStorage(data.imageUrl)
+          
+          // Borrar documento en Firestore
+          return deleteDoc(doc(db, 'creaciones', document.id))
+        })
+        
         await Promise.all(deletePromises)
       }
 
@@ -137,6 +164,7 @@ export default function ProfileSettings({ onBack }) {
       await deleteUser(user)
 
       logout()
+      navigate('/perfil', { state: { accountDeleted: true } })
     } catch (err) {
       console.error('Error al borrar cuenta:', err)
       if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
