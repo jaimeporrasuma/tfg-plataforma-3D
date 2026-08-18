@@ -32,7 +32,7 @@ export const generarImagenOrtografica = async (prompt, referenceImageBase64 = nu
                         }
                     },
                     {
-                        text: `Using this image as a visual reference, generate a new orthographic 3D render of the subject. ${prompt}. IMPORTANT: The output must be a clean orthographic render suitable for 3D printing - use the reference image only as inspiration for shape and structure, but render it as a simplified low-polygon 3D model on a solid black background.`
+                        text: `Using this image as a strict visual reference, generate a high-fidelity orthographic 3D clay render of the exact subject shown. ${prompt}. CRITICAL REQUIREMENTS: Absolutely DO NOT add any artificial supports, scaffolding, triangular wooden/metal braces, support rods, or external struts. DO NOT add robotic or mannequin segmentation cuts. Render only the clean, solid subject standing on its simple base against a solid pure black background.`
                     }
                 ];
             } else {

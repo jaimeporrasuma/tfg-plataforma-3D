@@ -21,7 +21,7 @@ export const ValidarImagenSkill = {
     },
     execute: async (args) => {
         console.log(`👁️ [Skill] Validando calidad de la imagen...`);
-        
+
         try {
             // Limpiamos el base64 por si viene con el prefijo "data:image/..."
             const base64Data = args.imagen_base64.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
@@ -35,6 +35,7 @@ CRITERIOS ESTRICTOS:
 2. Vista: Debe ser una vista ortográfica o frontal clara del objeto, no cortada.
 3. Objeto aislado: Solo debe haber un objeto principal, sin sombras proyectadas en el suelo ni ruido visual.
 4. Nivel de detalle: Al ser para impresión 3D, no debe tener detalles excesivamente microscópicos o estructuras imposibles (pelos finos, cables flotantes). Debe tener una base o geometría estable.
+5. Ausencia de soportes artificiales o elementos extraños: NO debe contener estructuras de soporte añadidas (andamios, varillas metálicas, marcos triangulares de madera/metal, puntales, tirantes) pegados al cuerpo u objeto. Debe ser el objeto/escultura limpio sobre su base. Si contiene soportes inventados, marcos o varillas, márcala como NO VÁLIDA (es_valida: false) e indica en recomendacion_prompt que se deben eliminar por completo dichos soportes o marcos.
 
 Devuelve tu análisis en formato JSON estricto con esta estructura:
 {
@@ -67,7 +68,7 @@ No añadas formato Markdown alrededor del JSON (\`\`\`json), devuelve solo las l
             });
 
             let responseText = response.text.trim();
-            
+
             // Limpiar posibles etiquetas markdown por seguridad
             if (responseText.startsWith('```json')) {
                 responseText = responseText.substring(7);
@@ -94,4 +95,4 @@ No añadas formato Markdown alrededor del JSON (\`\`\`json), devuelve solo las l
             };
         }
     }
-};
+};

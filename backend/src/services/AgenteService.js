@@ -86,7 +86,7 @@ export const iniciarAgente = async (userIdea, referenceImage = null) => {
     let isTaskComplete = false;
     let finalResultMessage = "";
     let currentInput = referenceImage
-        ? `El usuario quiere: ${userIdea}. El usuario ha proporcionado una imagen de referencia. Usa esta imagen como base visual al generar la imagen ortográfica. Comienza tu flujo.`
+        ? `El usuario quiere: ${userIdea}. El usuario ha proporcionado una imagen de referencia. Reproduce con la máxima fidelidad la escultura/objeto de la foto SIN añadir soportes, andamios, marcos triangulares, varillas ni elementos extraños. Comienza tu flujo.`
         : `El usuario quiere: ${userIdea}. Comienza tu flujo.`;
 
     let capturedImage = null;
