@@ -4,8 +4,12 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 //Proveedor de almacenamiento: 'firebase' o 'local'
-const STORAGE_PROVIDER = process.env.STORAGE_PROVIDER;
+const STORAGE_PROVIDER = process.env.STORAGE_PROVIDER || 'firebase';
 const BACKEND_URL = `http://localhost:${process.env.PORT || 8080}`;
 
 //Asegurar que las carpetas locales de uploads existan si se usa el modo local
@@ -21,10 +25,10 @@ if (STORAGE_PROVIDER === 'local') {
 
 //Descarga y guarda el modelo 3D GLB desde el server GPU.
 //Soporta almacenamiento en Firebase Storage o almacenamiento local.
-export const almacenarMaqueta3D = async (tailscaleUrl) => {
+export const almacenarMaqueta3D = async (modelUrl) => {
     try {
-        console.log(`Descargando modelo desde el server GPU... URL: ${tailscaleUrl}`);
-        const response = await axios.get(tailscaleUrl, {
+        console.log(`Descargando modelo desde el server GPU... URL: ${modelUrl}`);
+        const response = await axios.get(modelUrl, {
             responseType: 'arraybuffer',
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'

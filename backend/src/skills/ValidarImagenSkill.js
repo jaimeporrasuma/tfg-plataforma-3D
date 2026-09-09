@@ -4,6 +4,13 @@ dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+const FALLBACK_VALIDATION_MODELS = [
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-2.5-pro',
+    'gemini-3.1-flash-lite'
+];
+
 export const ValidarImagenSkill = {
     declaration: {
         name: "validar_imagen",
@@ -20,7 +27,7 @@ export const ValidarImagenSkill = {
         }
     },
     execute: async (args) => {
-        console.log(`👁️ [Skill] Validando calidad de la imagen...`);
+        console.log(`[Skill] Validando calidad de la imagen...`);
 
         try {
             // Limpiamos el base64 por si viene con el prefijo "data:image/..."
@@ -46,35 +53,52 @@ Devuelve tu análisis en formato JSON estricto con esta estructura:
 No añadas formato Markdown alrededor del JSON (\`\`\`json), devuelve solo las llaves {}.
 `;
 
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: [
-                    {
-                        role: 'user',
-                        parts: [
-                            { text: prompt },
+            let responseText = null;
+            let lastError = null;
+
+            for (const modelName of FALLBACK_VALIDATION_MODELS) {
+                try {
+                    console.log(`   └─ Intentando validación con ${modelName}...`);
+                    const response = await ai.models.generateContent({
+                        model: modelName,
+                        contents: [
                             {
-                                inlineData: {
-                                    data: base64Data,
-                                    mimeType: 'image/png'
-                                }
+                                role: 'user',
+                                parts: [
+                                    { text: prompt },
+                                    {
+                                        inlineData: {
+                                            data: base64Data,
+                                            mimeType: 'image/png'
+                                        }
+                                    }
+                                ]
                             }
-                        ]
+                        ],
+                        config: {
+                            temperature: 0.2, // Baja temperatura para análisis objetivo
+                        }
+                    });
+
+                    if (response.text) {
+                        responseText = response.text.trim();
+                        break;
                     }
-                ],
-                config: {
-                    temperature: 0.2, // Baja temperatura para análisis objetivo
+                } catch (modelError) {
+                    console.warn(`   ⚠️ Falló validación con ${modelName}:`, modelError.message);
+                    lastError = modelError;
                 }
-            });
-
-            let responseText = response.text.trim();
-
-            // Limpiar posibles etiquetas markdown por seguridad
-            if (responseText.startsWith('```json')) {
-                responseText = responseText.substring(7);
             }
-            if (responseText.endsWith('```')) {
-                responseText = responseText.substring(0, responseText.length - 3);
+
+            if (!responseText) {
+                throw lastError || new Error("Ningún modelo de validación pudo responder.");
+            }
+
+            // Extraer JSON limpiando posibles etiquetas markdown o texto alrededor
+            const firstBrace = responseText.indexOf('{');
+            const lastBrace = responseText.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1) {
+                responseText = responseText.substring(firstBrace, lastBrace + 1);
             }
 
             const analisis = JSON.parse(responseText.trim());

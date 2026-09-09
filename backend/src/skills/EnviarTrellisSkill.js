@@ -1,4 +1,7 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const EnviarTrellisSkill = {
     declaration: {
@@ -27,7 +30,7 @@ export const EnviarTrellisSkill = {
 
             //Usamos axios en lugar de fetch nativo: el fetch de Node.js usa undici que tiene
             //un headersTimeout de 30s que no se puede cambiar, y Trellis tarda más en responder.
-            const trellisUrl = process.env.TRELLIS_URL;
+            const trellisUrl = (process.env.TRELLIS_URL || 'http://localhost:3001').replace(/\/+$/, '');
             const response = await axios.post(
                 `${trellisUrl}/api/generar-3d`,
                 { imagen_base64: base64Puro },

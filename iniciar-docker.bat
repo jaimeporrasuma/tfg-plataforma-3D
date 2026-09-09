@@ -58,8 +58,24 @@ echo.
 docker compose up --build -d
 if errorlevel 1 (
     echo.
-    echo  [ERROR] Fallo al construir/arrancar los contenedores.
-    echo  Revisa los mensajes de error arriba.
+    echo  =============================================================
+    echo   [ERROR] Fallo al construir o arrancar los contenedores.
+    echo  =============================================================
+    echo   Revisa los mensajes de error arriba.
+    echo.
+    echo   Si el error indica "Ports are not available" o problemas de
+    echo   permisos al vincular puertos ^(forbidden by its access permissions^):
+    echo.
+    echo   El servicio Windows NAT ^(winnat^) suele reservar estos puertos.
+    echo   Para solucionarlo:
+    echo     1. Abre el Simbolo del sistema ^(CMD^) como Administrador.
+    echo     2. Ejecuta los siguientes comandos:
+    echo.
+    echo          net stop winnat
+    echo          net start winnat
+    echo.
+    echo     3. Vuelve a ejecutar este script ^(iniciar-docker.bat^).
+    echo  =============================================================
     echo.
     pause
     exit /b 1
