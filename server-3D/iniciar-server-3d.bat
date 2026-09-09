@@ -84,7 +84,7 @@ echo  ======================================================
 echo     [OK] SERVIDOR PUENTE INICIADO
 echo  ======================================================
 echo.
-echo  Escuchando peticiones en: http://localhost:3001
+echo  Servidor GPU en ejecucion y listo para recibir peticiones del backend.
 echo.
 echo  Mostrando logs en tiempo real (Puedes minimizar esta ventana)
 echo  ------------------------------------------------------

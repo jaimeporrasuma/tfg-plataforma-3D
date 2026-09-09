@@ -30,7 +30,7 @@
   },
   "13": {
     "inputs": {
-      "image": "Gemini_Generated_Image_kza3mikza3mikza3.png"
+      "image": "placeholder_input.png"
     },
     "class_type": "Trellis2LoadImageWithTransparency",
     "_meta": {
@@ -264,7 +264,7 @@
   },
   "35": {
     "inputs": {
-      "value": "ronda"
+      "value": "placeholder_output"
     },
     "class_type": "PrimitiveString",
     "_meta": {

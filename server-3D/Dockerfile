@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
-# Copiar el código fuente (index.js, workflow.json, etc.)
+# Copiar el código fuente (server.js, workflow.json, etc.)
 COPY . .
 
 # El servidor puente escucha en el 3001
