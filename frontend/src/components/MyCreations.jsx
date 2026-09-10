@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react'
 import { collection, query as fbQuery, where, orderBy, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import ViewerModal from './ViewerModal'
+import ScrollingTitle from './ScrollingTitle'
 import { useAuth } from '../contexts/AuthContext'
 import { deleteFileFromStorage } from '../services/storageService'
 
-export default function MyCreations({ onBack }) {
+export default function MyCreations() {
   const { user } = useAuth()
   const [creations, setCreations] = useState([])
   const [loading, setLoading] = useState(true)
@@ -29,7 +30,22 @@ export default function MyCreations({ onBack }) {
         }))
         setCreations(items)
       } catch (err) {
-        console.error('Error al cargar creaciones:', err)
+        console.warn('Fallo query ordenado en creaciones, reintentando sin índice:', err)
+        try {
+          const fallbackQuery = fbQuery(
+            collection(db, 'creaciones'),
+            where('uid', '==', user.uid)
+          )
+          const snapshot = await getDocs(fallbackQuery)
+          const items = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+          setCreations(items)
+        } catch (innerErr) {
+          console.error('Error al cargar creaciones:', innerErr)
+        }
       } finally {
         setLoading(false)
       }
@@ -118,15 +134,15 @@ export default function MyCreations({ onBack }) {
               </button>
 
               <div className="creation-info">
-                <h3 className="creation-title">{c.prompt}</h3>
+                <ScrollingTitle title={c.prompt} />
                 <p className="creation-date">
-                  {new Date(c.createdAt).toLocaleDateString('es-ES', {
+                  {c.createdAt ? new Date(c.createdAt).toLocaleDateString('es-ES', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit'
-                  })}
+                  }) : 'Sin fecha'}
                 </p>
               </div>
               {c.imageUrl && (
@@ -172,15 +188,17 @@ export default function MyCreations({ onBack }) {
                       </svg>
                     )}
                   </button>
-                  <a
-                    href={c.modelUrl}
-                    className="creation-download"
-                    download
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Descargar modelo
-                  </a>
+                  {c.modelUrl && (
+                    <a
+                      href={c.modelUrl}
+                      className="creation-download"
+                      download
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Descargar modelo
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

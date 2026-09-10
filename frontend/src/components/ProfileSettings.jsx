@@ -7,7 +7,7 @@ import {
   deleteUser
 } from 'firebase/auth'
 import { doc, updateDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore'
-import { auth, db } from '../config/firebase'
+import { db } from '../config/firebase'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { checkUsernameExists } from '../services/userService'
@@ -18,7 +18,9 @@ export default function ProfileSettings({ onBack }) {
   const navigate = useNavigate();
 
   // ── Nombre de usuario ──
-  const [newUsername, setNewUsername] = useState(dbUsername || user.displayName || '')
+  const initialUsername = dbUsername || user?.displayName || ''
+  const [usernameInput, setUsernameInput] = useState(null)
+  const newUsername = usernameInput !== null ? usernameInput : initialUsername
   const [usernameMsg, setUsernameMsg] = useState(null)
   const [usernameSaving, setUsernameSaving] = useState(false)
 
@@ -51,10 +53,10 @@ export default function ProfileSettings({ onBack }) {
 
     setUsernameSaving(true)
     try {
-      // 1. Comprobar que no exista ya en la BBDD
-      // Evitamos comprobar si el usuario intenta ponerse su nombre actual (aunque difiera en mayúsculas)
-      if (trimmed.toLowerCase() !== user.displayName?.toLowerCase()) {
-        const usernameExists = await checkUsernameExists(trimmed)
+      // 1. Comprobar que no exista ya en la BBDD en otro usuario
+      const currentName = dbUsername || user.displayName || ''
+      if (trimmed.toLowerCase() !== currentName.toLowerCase()) {
+        const usernameExists = await checkUsernameExists(trimmed, user.uid)
         if (usernameExists) {
           setUsernameMsg({ type: 'error', text: 'Ese nombre de usuario ya está en uso.' })
           setUsernameSaving(false)
@@ -74,6 +76,7 @@ export default function ProfileSettings({ onBack }) {
 
       setUsernameMsg({ type: 'success', text: '¡Nombre actualizado correctamente!' })
       setDbUsername(trimmed)
+      setUsernameInput(trimmed)
     } catch (err) {
       console.error('Error al cambiar nombre:', err)
       setUsernameMsg({ type: 'error', text: 'Error al guardar. Inténtalo de nuevo.' })
@@ -199,7 +202,7 @@ export default function ProfileSettings({ onBack }) {
             className="profile-input"
             placeholder="Nuevo nombre de usuario"
             value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
+            onChange={(e) => setUsernameInput(e.target.value)}
           />
           <button type="submit" className="profile-btn profile-btn--save" disabled={usernameSaving}>
             {usernameSaving ? <span className="auth-spinner" /> : 'Guardar'}

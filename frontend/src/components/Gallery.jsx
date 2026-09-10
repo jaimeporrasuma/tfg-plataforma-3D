@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { collection, query as fbQuery, orderBy, getDocs } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import ViewerModal from './ViewerModal'
+import ScrollingTitle from './ScrollingTitle'
 
-export default function Gallery({ onBack }) {
+export default function Gallery() {
   const [creations, setCreations] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -33,7 +34,7 @@ export default function Gallery({ onBack }) {
   }, [])
 
   const filteredCreations = creations.filter(c =>
-    c.prompt.toLowerCase().includes(searchQuery.toLowerCase()) && c.public !== false
+    (c.prompt || '').toLowerCase().includes(searchQuery.toLowerCase()) && c.public !== false
   )
 
   return (
@@ -76,18 +77,18 @@ export default function Gallery({ onBack }) {
           {filteredCreations.map((c) => (
             <div key={c.id} className="creation-card card">
               <div className="creation-info">
-                <h3 className="creation-title">{c.prompt}</h3>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                  <p className="creation-date" style={{ margin: 0 }}>
-                    {new Date(c.createdAt).toLocaleDateString('es-ES', {
+                <ScrollingTitle title={c.prompt} />
+                <div className="creation-meta">
+                  <span className="creation-date">
+                    {c.createdAt ? new Date(c.createdAt).toLocaleDateString('es-ES', {
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric'
-                    })}
-                  </p>
-                  <p className="creation-date" style={{color: 'var(--orange)', margin: 0, fontWeight: 'bold'}}>
+                    }) : 'Sin fecha'}
+                  </span>
+                  <span className="creation-author" title={c.username || 'Anónimo'}>
                     Autor: {c.username || 'Anónimo'}
-                  </p>
+                  </span>
                 </div>
               </div>
               {c.imageUrl && (
@@ -104,15 +105,17 @@ export default function Gallery({ onBack }) {
                   Ver en 3D
                 </button>
                 <div className="creation-actions">
-                  <a
-                    href={c.modelUrl}
-                    className="creation-download"
-                    download
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Descargar modelo
-                  </a>
+                  {c.modelUrl && (
+                    <a
+                      href={c.modelUrl}
+                      className="creation-download"
+                      download
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Descargar modelo
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import accountIcon from '../assets/account_circle.svg';
@@ -7,6 +7,7 @@ import styles from './Navbar.module.css';
 export default function Navbar({ authView, setAuthView }) {
   const { user, dbUsername, isAdmin, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -15,10 +16,32 @@ export default function Navbar({ authView, setAuthView }) {
     if (user) setAuthView('none');
   }, [user, setAuthView]);
 
+  // Close user dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserMenu]);
+
   const handleLogoutClick = () => {
     setShowUserMenu(false);
     logout();
     navigate('/');
+  };
+
+  const handleOpenAuth = (view) => {
+    setAuthView(view);
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
   };
 
   return (
@@ -50,7 +73,7 @@ export default function Navbar({ authView, setAuthView }) {
 
       <div className={styles.topBarRight}>
         {user ? (
-          <div className={styles.userDropdownContainer}>
+          <div className={styles.userDropdownContainer} ref={userMenuRef}>
             <div className={styles.userPill} onClick={() => setShowUserMenu(!showUserMenu)}>
               <img src={accountIcon} alt="User" className={styles.userIcon} />
               <span className={styles.userName}>{dbUsername || user?.displayName || user?.email?.split('@')[0]}</span>
@@ -68,20 +91,18 @@ export default function Navbar({ authView, setAuthView }) {
             )}
           </div>
         ) : (
-          location.pathname !== '/galeria' && (
-            <div className={styles.topBarAuthButtons}>
-              {authView !== 'login' && (
-                <button className={styles.btnLoginTop} onClick={() => setAuthView('login')}>
-                  Iniciar sesión
-                </button>
-              )}
-              {authView !== 'register' && (
-                <button className={styles.btnRegisterTop} onClick={() => setAuthView('register')}>
-                  Registrarse
-                </button>
-              )}
-            </div>
-          )
+          <div className={styles.topBarAuthButtons}>
+            {authView !== 'login' && (
+              <button className={styles.btnLoginTop} onClick={() => handleOpenAuth('login')}>
+                Iniciar sesión
+              </button>
+            )}
+            {authView !== 'register' && (
+              <button className={styles.btnRegisterTop} onClick={() => handleOpenAuth('register')}>
+                Registrarse
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>

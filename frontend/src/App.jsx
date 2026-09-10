@@ -12,6 +12,51 @@ import AdminGallery from './components/AdminGallery'
 import ViewerModal from './components/ViewerModal'
 import './App.css'
 
+function AuthRequiredMessage({ isDeleted, onLogin, onRegister }) {
+  return (
+    <div style={{ textAlign: 'center', marginTop: '6rem', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <h2 style={{ marginBottom: '2rem', fontWeight: 500, fontSize: '1.8rem', fontFamily: 'var(--font-heading)' }}>
+        {isDeleted ? "Cuenta eliminada correctamente" : "Debes iniciar sesión"}
+      </h2>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
+        <button 
+          style={{ 
+            background: 'var(--orange, #e65c00)', 
+            color: 'white', 
+            padding: '10px 24px', 
+            borderRadius: '112px', 
+            border: 'none', 
+            cursor: 'pointer', 
+            fontSize: '18px', 
+            fontWeight: 600, 
+            fontFamily: 'var(--font-heading)' 
+          }} 
+          onClick={onLogin}
+        >
+          Iniciar sesión
+        </button>
+        <span style={{ fontSize: '1.2rem', opacity: 0.8, fontFamily: 'var(--font-heading)' }}>o</span>
+        <button 
+          style={{ 
+            background: 'white', 
+            color: 'var(--orange, #e65c00)', 
+            padding: '10px 24px', 
+            borderRadius: '112px', 
+            border: 'none', 
+            cursor: 'pointer', 
+            fontSize: '18px', 
+            fontWeight: 600, 
+            fontFamily: 'var(--font-heading)' 
+          }} 
+          onClick={onRegister}
+        >
+          Registrarse
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const { user } = useAuth()
   const [query, setQuery] = useState('')
@@ -30,51 +75,9 @@ function App() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const AuthRequiredMessage = () => {
-    const isDeleted = location.state?.accountDeleted;
-    return (
-      <div style={{ textAlign: 'center', marginTop: '6rem', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <h2 style={{ marginBottom: '2rem', fontWeight: 500, fontSize: '1.8rem', fontFamily: 'var(--font-heading)' }}>
-          {isDeleted ? "Cuenta eliminada correctamente" : "Debes iniciar sesión"}
-        </h2>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-          <button 
-            style={{ 
-              background: 'var(--orange, #e65c00)', 
-              color: 'white', 
-              padding: '10px 24px', 
-              borderRadius: '112px', 
-              border: 'none', 
-              cursor: 'pointer', 
-              fontSize: '18px', 
-              fontWeight: 600, 
-              fontFamily: 'var(--font-heading)' 
-            }} 
-            onClick={() => { setAuthView('login'); navigate('/'); }}
-          >
-            Iniciar sesión
-          </button>
-          <span style={{ fontSize: '1.2rem', opacity: 0.8, fontFamily: 'var(--font-heading)' }}>o</span>
-          <button 
-            style={{ 
-              background: 'white', 
-              color: 'var(--orange, #e65c00)', 
-              padding: '10px 24px', 
-              borderRadius: '112px', 
-              border: 'none', 
-              cursor: 'pointer', 
-              fontSize: '18px', 
-              fontWeight: 600, 
-              fontFamily: 'var(--font-heading)' 
-            }} 
-            onClick={() => { setAuthView('register'); navigate('/'); }}
-          >
-            Registrarse
-          </button>
-        </div>
-      </div>
-    )
-  }
+  const isAccountDeleted = location.state?.accountDeleted;
+  const handleAuthLogin = () => { setAuthView('login'); navigate('/'); };
+  const handleAuthRegister = () => { setAuthView('register'); navigate('/'); };
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0]
@@ -143,13 +146,13 @@ function App() {
             } />
             <Route path="/galeria" element={<Gallery />} />
             <Route path="/creaciones" element={
-              user ? <MyCreations /> : <AuthRequiredMessage />
+              user ? <MyCreations /> : <AuthRequiredMessage isDeleted={isAccountDeleted} onLogin={handleAuthLogin} onRegister={handleAuthRegister} />
             } />
             <Route path="/admin" element={
-              user ? <AdminGallery /> : <AuthRequiredMessage />
+              user ? <AdminGallery /> : <AuthRequiredMessage isDeleted={isAccountDeleted} onLogin={handleAuthLogin} onRegister={handleAuthRegister} />
             } />
             <Route path="/perfil" element={
-              user ? <ProfileSettings /> : <AuthRequiredMessage />
+              user ? <ProfileSettings /> : <AuthRequiredMessage isDeleted={isAccountDeleted} onLogin={handleAuthLogin} onRegister={handleAuthRegister} />
             } />
           </Routes>
         </section>

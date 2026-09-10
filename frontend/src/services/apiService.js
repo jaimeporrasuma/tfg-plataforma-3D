@@ -1,9 +1,9 @@
 export const generarMaqueta3D = async (query, user, referenceImageBase64 = null) => {
-  const payload = { 
-    prompt: query, 
-    uid: user.uid 
+  const payload = {
+    prompt: query,
+    uid: user.uid
   };
-  
+
   if (referenceImageBase64) {
     payload.referenceImage = referenceImageBase64;
   }
@@ -15,7 +15,7 @@ export const generarMaqueta3D = async (query, user, referenceImageBase64 = null)
   });
 
   const data = await res.json();
-  
+
   if (!res.ok || !data.success) {
     throw new Error(data.error || 'Error desconocido del servidor.');
   }

@@ -1,4 +1,3 @@
-import React from 'react';
 import Login from './Login';
 import Register from './Register';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,7 +29,14 @@ export default function Home({
                   </button>
                 </div>
               )}
-              <div className="search-input-wrapper">
+              <div 
+                className="search-input-wrapper"
+                onClick={(e) => {
+                  if (!e.target.closest('button')) {
+                    document.getElementById('search-input')?.focus();
+                  }
+                }}
+              >
                 <input
                   id="search-input"
                   type="text"

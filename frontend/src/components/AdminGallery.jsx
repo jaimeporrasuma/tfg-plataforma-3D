@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { collection, query as fbQuery, orderBy, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import ViewerModal from './ViewerModal'
+import ScrollingTitle from './ScrollingTitle'
 import { useAuth } from '../contexts/AuthContext'
 import { deleteFileFromStorage } from '../services/storageService'
 
@@ -73,7 +74,16 @@ export default function AdminGallery() {
   }
 
   if (!isAdmin) {
-    return <div style={{ textAlign: 'center', marginTop: '4rem' }}>Acceso denegado: Necesitas permisos de administrador.</div>;
+    return (
+      <div style={{ textAlign: 'center', marginTop: '6rem', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <h2 style={{ marginBottom: '1.5rem', fontWeight: 500, fontSize: '1.8rem', fontFamily: 'var(--font-heading)' }}>
+          Acceso denegado
+        </h2>
+        <p style={{ opacity: 0.85, fontSize: '1.1rem', fontFamily: 'var(--font-heading)' }}>
+          Necesitas permisos de administrador para ver este panel.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -111,16 +121,16 @@ export default function AdminGallery() {
               </button>
 
               <div className="creation-info">
-                <h3 className="creation-title">{c.prompt}</h3>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <p className="creation-date" style={{ margin: 0 }}>
+                <ScrollingTitle title={c.prompt} />
+                <div className="creation-meta">
+                  <span className="creation-date">
                     {c.createdAt ? new Date(c.createdAt).toLocaleDateString('es-ES', {
-                        day: 'numeric', month: 'short', year: 'numeric'
+                      day: 'numeric', month: 'short', year: 'numeric'
                     }) : 'Sin fecha'}
-                    </p>
-                    <p className="creation-date" style={{color: 'var(--orange)', margin: 0, fontWeight: 'bold'}}>
-                        Autor: {c.username || 'Anónimo'}
-                    </p>
+                  </span>
+                  <span className="creation-author" title={c.username || 'Anónimo'}>
+                    Autor: {c.username || 'Anónimo'}
+                  </span>
                 </div>
               </div>
               
@@ -168,9 +178,11 @@ export default function AdminGallery() {
                       </svg>
                     )}
                   </button>
-                  <a href={c.modelUrl} className="creation-download" download target="_blank" rel="noreferrer">
-                    Descargar modelo
-                  </a>
+                  {c.modelUrl && (
+                    <a href={c.modelUrl} className="creation-download" download target="_blank" rel="noreferrer">
+                      Descargar modelo
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
