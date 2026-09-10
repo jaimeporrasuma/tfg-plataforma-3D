@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title  Logs - Server 3D
+title TFG Plataforma 3D - Servidor 3D
 
 echo.
 echo  ======================================================
@@ -86,14 +86,25 @@ echo  ======================================================
 echo.
 echo  Servidor GPU en ejecucion y listo para recibir peticiones del backend.
 echo.
-echo  Mostrando logs en tiempo real (Puedes minimizar esta ventana)
+:: Abrir ventana con los logs del servidor 3D en tiempo real
+start "Logs Server 3D" cmd /c "cd /d "%PROJECT_DIR%" && title Logs - Server 3D && docker compose logs -f"
+
+echo.
 echo  ------------------------------------------------------
+echo   Servidor 3D (GPU Bridge): http://localhost:3001
+echo   Logs en tiempo real abiertos en una ventana separada.
+echo  ------------------------------------------------------
+echo.
+echo  NO cierres esta ventana mientras uses el Servidor 3D.
+echo  Pulsa cualquier tecla para APAGAR el servidor...
+echo.
+pause >nul
 
-:: Mostrar logs en esta misma ventana para que el tutor vea cuando llega la imagen
-docker compose logs -f
-
-:: Si el usuario cierra con Ctrl+C, limpiamos la casa
+:: -------------------------------------------------
+:: 3. Apagar contenedor
+:: -------------------------------------------------
 echo.
 echo  Apagando contenedor del Servidor GPU...
 docker compose down
+echo  Todo cerrado.
 timeout /t 2 /nobreak >nul
