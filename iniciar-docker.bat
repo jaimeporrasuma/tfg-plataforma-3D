@@ -49,6 +49,50 @@ echo  [OK] Docker detectado y funcionando
 echo.
 
 :: -------------------------------------------------
+:: 0.1 Comprobar configuracion del Backend (.env)
+:: -------------------------------------------------
+if not exist "backend\.env" (
+    echo.
+    echo  =============================================================
+    echo   [ERROR] Falta el archivo de variables de entorno: backend\.env
+    echo  =============================================================
+    echo.
+    echo   1. Copia el archivo "backend\.env.example" como "backend\.env".
+    echo   2. Abre "backend\.env" y configura tu GEMINI_API_KEY.
+    echo.
+    echo   Vuelve a ejecutar este archivo una vez configurado.
+    echo  =============================================================
+    echo.
+    pause
+    exit /b 1
+)
+
+:: -------------------------------------------------
+:: 0.2 Comprobar credenciales de Firebase
+:: -------------------------------------------------
+if not exist "backend\firebase-service-account.json" (
+    echo.
+    echo  =============================================================
+    echo   [ERROR] Falta la clave privada de Firebase en el backend.
+    echo  =============================================================
+    echo.
+    echo   No se encontro: backend\firebase-service-account.json
+    echo.
+    echo   Para obtenerlo:
+    echo     1. Entra en la Consola de Firebase - Configuracion del Proyecto.
+    echo     2. Ve a la pestana "Cuentas de servicio" y pulsa
+    echo        "Generar nueva clave privada".
+    echo     3. Guarda el archivo descargado en la carpeta backend con el
+    echo        nombre exacto: firebase-service-account.json
+    echo.
+    echo   Vuelve a ejecutar este archivo tras anadir las credenciales.
+    echo  =============================================================
+    echo.
+    pause
+    exit /b 1
+)
+
+:: -------------------------------------------------
 :: 1. Construir y arrancar los contenedores
 :: -------------------------------------------------
 echo  Construyendo y arrancando contenedores...
@@ -129,8 +173,12 @@ start "" "http://localhost:5173"
 
 echo.
 echo  -------------------------------------------------
-echo   App:     http://localhost:5173
-echo   Backend: http://localhost:8080
+echo   App (Frontend): http://localhost:5173
+echo   API (Backend):  http://localhost:8080
+echo.
+echo   * NOTA: Para generar modelos 3D con GPU local,
+echo     asegurate de tener ComfyUI y el Servidor 3D
+echo     corriendo (server-3D\iniciar-server-3d.bat).
 echo  -------------------------------------------------
 echo.
 echo  NO cierres esta ventana mientras uses la app.

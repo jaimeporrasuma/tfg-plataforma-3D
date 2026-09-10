@@ -6,6 +6,10 @@ services:
       - "8080:8080"
     env_file:
       - ./backend/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./backend/uploads:/usr/src/app/uploads
     restart: unless-stopped
 
   frontend:
